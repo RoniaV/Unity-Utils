@@ -4,47 +4,39 @@ using System;
 
 public class Counter 
 {
+    #region Properties
     public float TimeToComplete { get { return timeToComplete; } }
-    public float ActualTime { get { return actualTime; } }
+    public float TimeLeft { get { return SetTimeLeft(); } }
     public bool Stopped { get { return stopped; } }
+    public bool Finished { get { return UpdateCounter(); } }
+    #endregion
 
+    #region Fields
     private float timeToComplete;
-    private float actualTime;
+    private float timeLeft;
     private DateTime lastDateTime;
-    private bool stopped = true;
 
+    private bool stopped = true;
+    private bool finished = false;
+    #endregion
+
+    #region Constructors
     public Counter() { }
 
-    public Counter(float time)
+    public Counter(float time, bool startNow = false)
     {
         timeToComplete = time;
+
+        if (startNow)
+            StartCounter();
     }
+    #endregion
 
-    public bool CheckCounter()
-    {
-        if (!stopped)
-        {
-            TimeSpan addSeconds = DateTime.Now - lastDateTime;
-            actualTime += (float)addSeconds.TotalSeconds;
-
-            //Update lastDateTime
-            lastDateTime = DateTime.Now;
-
-            bool counterFinished = actualTime >= timeToComplete;
-
-            if (counterFinished)
-                ResetCounter();
-
-            return counterFinished;
-        }
-        else
-            return false;
-    }
-
+    #region Public Methods
     public void ResetCounter()
     {
         lastDateTime = default;
-        actualTime = 0;
+        timeLeft = 0;
 
         stopped = true;
     }
@@ -54,7 +46,7 @@ public class Counter
         timeToComplete = time;
     }
 
-    public void PlayCounter()
+    public void StartCounter()
     {
         lastDateTime = DateTime.Now;
         stopped = false;
@@ -64,4 +56,33 @@ public class Counter
     {
         stopped = true;
     }
+    #endregion
+
+    #region Private Methods
+    private bool UpdateCounter()
+    {
+        SetTimeLeft();
+
+        finished = timeLeft >= timeToComplete;
+
+        if (finished)
+            ResetCounter();
+
+        return finished;
+    }
+
+    private float SetTimeLeft()
+    {
+        if (!stopped)
+        {
+            TimeSpan addSeconds = DateTime.Now - lastDateTime;
+            timeLeft += (float)addSeconds.TotalSeconds;
+
+            //Update lastDateTime
+            lastDateTime = DateTime.Now;
+        }
+
+        return timeLeft;
+    }
+    #endregion
 }
