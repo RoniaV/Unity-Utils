@@ -6,7 +6,7 @@ public class Counter
 {
     #region Properties
     public float TimeToComplete { get { return timeToComplete; } }
-    public float TimeLeft { get { return SetTimeLeft(); } }
+    public float TimeLeft { get { return GetTimeLeft(); } }
     public bool Stopped { get { return stopped; } }
     public bool Finished { get { return UpdateCounter(); } }
     #endregion
@@ -83,6 +83,15 @@ public class Counter
         }
 
         return timeLeft;
+    }
+
+    private float GetTimeLeft()
+    {
+        float tl = 0;
+
+        tl = timeToComplete - timeLeft;
+
+        return tl;
     }
     #endregion
 }
